@@ -3,21 +3,29 @@ import { motion } from "motion/react"
 import { getObtenerBanner } from "../api/banner.api";
 import { useEffect, useState } from "react";
 import type { Banner } from "../models";
+import SkeletonBanner from "./skeleton/SkeletonBanner";
 
 export default function Banner() {
 
     const [banner, setBanner] = useState<Banner | null>(null)
+    const [pending, setPending] = useState(false)
 
     const obtenerBanner = async () => {
+        setPending(true);
         const data = await getObtenerBanner();
         setBanner(data && data.length === 0 ? null : data![0]);
+        setPending(false);
     }
 
    useEffect(() => {
         obtenerBanner();
    }, [])
 
-    if(banner) return (
+   if (pending) return (
+        <SkeletonBanner />
+   )
+
+    if(banner && !pending) return (
         <div className={`mb-[77px]`} style={{ backgroundColor: banner.background }}>
             <div className="w-10/12 lg:w-[82%] m-auto flex justify-between py-5">
                 <div className="grid grid-cols-2 lg:h-[542px]">
